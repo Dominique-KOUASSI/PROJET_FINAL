@@ -29,12 +29,12 @@ const char* ssid     = "ESP32_AP";
 const char* password = "123456789";
 
 // Set ESP32 Static IP address.
-IPAddress local_IP(192, 168, 1, 1);
-IPAddress gateway(192, 168, 1, 1);
+IPAddress local_IP(192, 168, 1, 8);
+IPAddress gateway(192, 168, 1, 8);
 IPAddress subnet(255, 255, 255, 0);
 IPAddress primaryDNS(8, 8, 8, 8);
 IPAddress secondaryDNS(8, 8, 4, 4);
-IPAddress dhcp_lease_start(192, 168, 1, 2);
+IPAddress dhcp_lease_start(192, 168, 1, 10);
 
 Weather my_weather(DHTPIN);             // Data collection object
 
@@ -103,6 +103,23 @@ String processor(const String& var){
   return String();
 }
 
+
+String get_graph_json_str(){
+
+  String date_time = my_weather.get_datetime_str();
+
+  String temperature_data = my_weather.get_temperature_str();
+  String humidity_data = my_weather.get_humidity_str();
+
+  String avg_temperature = my_weather.get_avg_temperature_str();
+  String avg_humidity = my_weather.get_avg_humidity_str();
+
+  //"{\"labels\":[\"2021-08-01\", \"2021-08-02\", \"2021-08-03\", \"2021-08-04\", \"2021-08-05\", \"2021-08-06\", \"2021-08-07\", \"2021-08-08\", \"2021-08-09\"], \"temperature\":[0, 0, 84, 76, 0 , 0, 84, 76, 50], \"humidity\":[1, 1, 1, 1, 0, 1, 1, 1, 50]}";
+  String graph_json_str = "{\"labels\":[" + date_time + "]," + "\"temperature\":[" + temperature_data + "]," + "\"humidity\":[" + humidity_data + "]," + "\"avg_temperature\":" + avg_temperature + "," + "\"avg_humidity\":" + avg_humidity + "}";
+
+  return graph_json_str;
+}
+
 void setup() {
 
   Serial.begin(115200);           // Initialize Serial Comm
@@ -111,10 +128,22 @@ void setup() {
   initSPIFFS();
 
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send(SPIFFS, "/index.html", "text/html", false, processor);
+    request->send(SPIFFS, "/index.html", "text/html");
   });
 
   server.serveStatic("/", SPIFFS, "/");
+
+  server.on("/update_graph", HTTP_GET, [](AsyncWebServerRequest *request){
+    Serial.println("GET received:");
+
+    String json = my_weather.get_graph_json_str();
+    //String json =  "{\"labels\":[\"2021-08-01\", \"2021-08-02\", \"2021-08-03\", \"2021-08-04\", \"2021-08-05\", \"2021-08-06\", \"2021-08-07\", \"2021-08-08\", \"2021-08-09\"], \"temperature\":[0, 0, 84, 76, 0 , 0, 84, 76, 50], \"humidity\":[1, 1, 1, 1, 0, 1, 1, 1, 50]}";
+
+    request->send(200, "application/json", json);
+    json = String();
+
+  });
+
   server.begin();
 
   pinMode(LED, OUTPUT);           // initialize digital LED pin  as an output.

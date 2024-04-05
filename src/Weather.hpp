@@ -27,7 +27,7 @@
 #include "SPIFFS.h"
 #include "Timer.h"
 
-#define RECORD_MAX_SIZE 20  // Max data record allowed.
+#define RECORD_MAX_SIZE 10  // Max data record allowed.
 
 struct weather_type {
   char date_time[20];       // Date and time in mysql format 2024-03-28 17:35:00.
@@ -53,7 +53,11 @@ class Weather
         std::vector<weather_type_t> weather_table;    // Empty vector.
         weather_type_t current_weather;
 
+        String graph_json_str;
+
         Timer timer;
+        void build_graph_json_str();
+
 
     public:
         //Weather();
@@ -64,6 +68,7 @@ class Weather
         String get_datetime_str();
         String get_avg_temperature_str();
         String get_avg_humidity_str();
+        String get_graph_json_str();
 
         void process_weather();
 

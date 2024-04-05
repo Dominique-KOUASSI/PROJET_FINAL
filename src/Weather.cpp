@@ -26,7 +26,8 @@
 #include "SPIFFS.h"
 
 #define DHTTYPE DHT22               // Type de capteur DHT utilisé (DHT11, DHT22, AM2302, etc.).
-#define COLLECTION_DELAY 60000      // collecte data every minute     
+//#define COLLECTION_DELAY 60000      // collecte data every minute     
+#define COLLECTION_DELAY 10000      // collecte data every 5 seconds   
 
 //Weather::Weather(){};
 Weather::Weather(int pin_for_dht22): dht22_pin(pin_for_dht22), dht(pin_for_dht22, DHTTYPE) {
@@ -35,7 +36,9 @@ Weather::Weather(int pin_for_dht22): dht22_pin(pin_for_dht22), dht(pin_for_dht22
 	Wire.begin();
     this->dht.begin();
 
-    this->timer.startTimer(60000);
+    this->timer.startTimer(COLLECTION_DELAY);
+
+    this->graph_json_str = "";
 
 };
 
@@ -84,7 +87,7 @@ String Weather::get_datetime_str() {
   String datetime_str;
 
   for (int i = 0; i < weather_table.size(); i++) {
-    datetime_str += (String)"'" + weather_table[i].date_time + "'";
+    datetime_str += (String)"\"" + weather_table[i].date_time + "\"";
     if (i < weather_table.size() - 1) {
       datetime_str += ',';
     }
@@ -148,10 +151,34 @@ void Weather::process_weather() {
             weather_table.erase(weather_table.begin()); // Remove the first element.
             weather_table.push_back(current_weather);   // Add.
             }
+
+            // display data recorded
+            //Serial.println((String)"Recorded: " + current_weather.date_time + " " + current_weather.temperature + " " + current_weather.humidity);
         }
 
+        this->timer.startTimer(COLLECTION_DELAY);
 
-        this->timer.startTimer(60000);
+        this->build_graph_json_str();
+
+        Serial.println(this->graph_json_str);
     }
 
 }
+
+void Weather::build_graph_json_str(){
+
+  String date_time = this->get_datetime_str();
+
+  String temperature_data = this->get_temperature_str();
+  String humidity_data = this->get_humidity_str();
+
+  String avg_temperature = this->get_avg_temperature_str();
+  String avg_humidity = this->get_avg_humidity_str();
+
+  this->graph_json_str = "{\"labels\":[" + date_time + "]," + "\"temperature\":[" + temperature_data + "]," + "\"humidity\":[" + humidity_data + "]," + "\"avg_temperature\":" + avg_temperature + "," + "\"avg_humidity\":" + avg_humidity + "}";
+
+}
+
+String Weather::get_graph_json_str(){
+  return this->graph_json_str;
+};

@@ -6,7 +6,7 @@
     <title>Station</title>
     <script src="highcharts.js"></script>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="css/all.min.css">
+    <link rel="stylesheet" href="fontawesome.local.all.min.css">
     <link rel="icon" type="image/png" href="favicon.png">
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -29,7 +29,7 @@
                             <div class="card-body p-4 ">
                                 <div class="row">
                                     <p class="titre_avg" style="color: black;">Average Temperature</p>
-                                    <p class="valeur" style="color: #B197FC;">%AVGTEMP% °C</p>
+                                    <p class="valeur" style="color: #B197FC;"><span id="avg_temperature"></span> °C</p>
                                 </div>
                             </div>
                         </div>
@@ -40,7 +40,7 @@
                             <div class="card-body p-4 ">
                                 <div class="row">
                                     <p class="titre_avg" style="color: black;">Average Humidity</p>
-                                    <p class="valeur" style="color: #B197FC;">%AVGHUM% &#37</p>
+                                    <p class="valeur" style="color: #B197FC;"><span id="avg_humidity"></span> &#37</p>
                                 </div>
                             </div>
                         </div>
@@ -50,8 +50,9 @@
                         <div class="card shadow ">
                             <div class="card-body p-4 ">
                                 <div class="row">
-                                    <p class="titre_avg" style="color: black;">Etat LED</p>
-                                    <p class="valeur" style="color: #B197FC;">%ETAT_LED%</p>
+                                    <p class="titre_avg" style="color: black;">LED</p>
+                                    <p class="valeur"><i class="fas fa-lightbulb fa-2xl" style="color: #fc7474;"></i></p>
+                                    <!-- <p class="valeur" style="color: #B197FC;">%ETAT_LED%</p> -->
                                 </div>
                             </div>
                         </div>
@@ -70,9 +71,9 @@
             </div>
 
     </main>
-
+    <script src="script.js"></script>
 </body>
-
+<!-- 
 <script>
     Highcharts.chart('chart-temperature', {
         credits: {
@@ -90,7 +91,7 @@
             align: 'left'
         },
         xAxis: [{
-            categories: [%DATETIME%],
+            categories: [],
             crosshair: true
         }],
         yAxis: [{ // Primary yAxis
@@ -125,10 +126,11 @@
             shared: true
         },
         legend: {
-            align: 'top',
+            layout: 'vertical',
+            align: 'left',
             x: 80,
             verticalAlign: 'top',
-            y: 60,
+            y: 55,
             floating: true,
             backgroundColor:
                 Highcharts.defaultOptions.legend.backgroundColor || // theme
@@ -138,7 +140,7 @@
             name: 'Humidity',
             type: 'column',
             yAxis: 1,
-            data: [%HUMIDITY%],
+            data: [],
             tooltip: {
                 valueSuffix: ' &#37'
             }
@@ -146,12 +148,12 @@
         }, {
             name: 'Temperature',
             type: 'spline',
-            data: [%TEMPERATURE%],
+            data: [],
             tooltip: {
                 valueSuffix: '°C'
             }
         }]
     });
     </script>
-    
+  -->  
 </html>
